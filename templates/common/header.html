@@ -1,0 +1,75 @@
+<header class="nav-holder make-sticky">
+    <div id="navbar" role="navigation" class="navbar navbar-expand-lg">
+        <div class="container">
+            <a href="/" class="navbar-brand home" title="在线图书推荐系统"
+               style="font-size: 28px;color: #555;font-weight:500;letter-spacing: 0.1em;">
+                在线图书推荐系统
+            </a>
+            <div style="width:45%;padding:0px 5% 0px 5%">
+            	<form action="/" method="post" id="searchform">
+                    {% csrf_token %}
+                	<div class="input-group">
+                  		<input type="text" name="itemname" value="{{ itemname }}"
+                  			placeholder="请输入图书名称..." maxlength="255"
+                  		 	class="form-control" style="width:60%">
+                  		<div class="input-group-append">
+                    		<button type="button" class="btn btn-secondary" onclick="javascript:$('#searchform').submit()"
+                    			title="搜索"><i class="fa fa-search"></i></button>
+                  		</div>
+                	</div>
+              	</form>
+            </div>
+            <div style="width:30%" class="ml-auto">
+                <ul class="nav navbar-nav ml-auto">
+                    {% if request.session.session_user_isLogin %}
+                        <li class="nav-item dropdown">
+                            <a href="javascript:void(0)" data-toggle="dropdown" class="dropdown-toggle"
+                                title="{{ request.session.session_user_username }}" >
+                                用户：
+                                {% if request.session.session_user_username|length > 5 %}
+                                    {{ request.session.session_user_username|slice:'5' }}...
+                                {% else %} {{ request.session.session_user_username }} {% endif %}  </b>
+                            </a>
+                            <ul class="dropdown-menu" style="top: 80%;">
+                                <li class="dropdown-item">
+                                    <a href="/user/edit" class="nav-link">信息维护</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="/user/password" class="nav-link">密码安全</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="/scorerecord/list" class="nav-link">我的评分</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="/comment/list" class="nav-link">我的评论</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="/collection/list" class="nav-link">我的收藏</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="/likerecord/list" class="nav-link">我的点赞</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="/logout" class="nav-link">注销</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="/recommendCF" class="">个性化推荐</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown" style="margin-left:20%">
+                            <a href="/login" class="" title="登录">登录</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="/register" class="" title="注册">注册</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="/recommendHot" class="" title="热点推荐">热点推荐</a>
+                        </li>
+				    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>

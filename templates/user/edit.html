@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>【信息维护】在线图书推荐系统</title>
+    {% include '../common/css.html' %}
+</head>
+<body>
+    {% include '../common/header.html' %}
+    <div id="all">
+        {% include '../common/banner.html' %}
+        <div id="content">
+            <div class="container">
+                <div class="row bar">
+                    <div class="col-md-12" align="center">
+                        <div class="heading" align="left">
+                            <h3 style="font-weight: normal">信息维护</h3>
+                        </div>
+                        <div class="col-md-6" >
+                            <form action="/user/doEdit" method="post" id="form">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="email" style="display: inline-block;width:20%">用户名：</label>
+                                    <input value="{{ user.username }}" name="username" id="username" maxlength="255" type="text"
+                                           readonly="readonly"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" style="display: inline-block;width:20%">邮箱：</label>
+                                    <input value="{{ user.email }}" name="email" id="email" maxlength="255" type="text"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" style="display: inline-block;width:20%">注册时间：</label>
+                                    <input value="{{ user.createtime }}" name="createtime" id="createtime" maxlength="255" type="text"
+                                           readonly="readonly"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-template-outlined" id="submitBtn">
+                                        &nbsp;&nbsp;提&nbsp;&nbsp;&nbsp;&nbsp;交&nbsp;&nbsp;
+                                    </button>
+                                </div>
+                                <br><br><br>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '../common/footer.html' %}
+    {% include '../common/js.html' %}
+    <script>
+        $(function(){
+            $("#submitBtn").on("click",function(){
+                    var temp = true;
+                    $("#form").find("input[type='text']").each(function(){
+                        if($(this).val()==null || $(this).val()==""){
+                            temp = false;
+                            return false;
+                        }
+                    });
+                    if(!temp){
+                        layer.msg("数据不能为空!");return false;
+                    }
+                    //对电子邮件的验证
+                    var emailreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+                    if(!emailreg.test($("#email").val())){
+                        layer.msg("邮箱格式不正确!");return false;
+                    }
+                    common_ajax_other($("#form").attr("action"),$("#form").serialize());
+            });
+        });
+    </script>
+</body>
+</html>

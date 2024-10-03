@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>【图书详情】在线图书推荐系统</title>
+    {% include '../common/css.html' %}
+</head>
+<body>
+    {% include '../common/header.html' %}
+    <div id="all">
+        {% include '../common/banner.html' %}
+        <div id="content">
+            <div class="container">
+                <div class="row bar">
+                    <div class="col-md-12">
+                        <div class="heading">
+                            <h3 style="font-weight: normal">图书详情</h3>
+                        </div>
+                        <div class="row portfolio-showcase">
+                            <div class="col-md-4">
+                                <div class="image">
+                                    <img src="{{ item.image.url }}" title="{{ item.itemname }}"
+                                         class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h3>
+                                    <a href="/item/detail?itemid={{ item.id }}">{{ item.itemname }}</a>
+                                </h3>
+                                <p class="lead" style="color: #747474;font-size: 1rem;margin-bottom: 10px;">
+                                    图书类型：{{ item.typeid.typename }}
+                                </p>
+                                <p class="lead" style="color: #747474;font-size: 1rem;margin-bottom: 10px;">
+                                    添加时间：{{ item.createtime }}
+                                </p>
+                                <p class="lead" style="margin-bottom: 10px;">
+                                    <div class="dicription" >
+                                        <label style="color: #747474;">图书评分：</label>
+                                        <div id="star" style="display: inline-block"></div>
+                                    </div>
+                                </p>
+                                <p class="">
+                                	{% if not collection %}
+                                        <button type="button" title="收藏" onclick="doCollect()"
+                                            class="btn btn-default" style="margin-right:10px">
+                                            <i class="fa fa-heart-o"></i>
+                                        </button>
+                                    {% else %}
+                                        <button type="button" title="取消收藏" onclick="doCollect()"
+                                            class="btn btn-default" style="margin-right:10px">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    {% endif %}
+                      			</p>
+                                <p class="lead" style="color: #747474;font-size: 1rem;margin-bottom: 10px;">
+                                    图书简介：
+                                </p>
+                                <p>{{ item.content }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9" style="font-size: 1rem;">
+              			<section>
+                			<div id="text-page">
+                  				<div class="panel-heading">
+				                  <h3 class="h4 panel-title">精彩评论</h3>
+				                </div>
+				                {% if pageBean %}
+                                    {% for comment in pageBean %}
+                                        <blockquote class="blockquote"
+                                            style="">
+                                            <p>
+                                                <span style="color:#a54e99;display: block;margin-bottom:2px">
+                                                    <span style="display: inline-block">用户：{{ comment.userid.username }}</span>
+                                                    <span style="display: inline-block;float: right;font-size: 13px;margin-left:20px">
+                                                        <a href="javascript:doLike({{ comment.id }})">
+                                                            {% if comment.likerecord %}取消点赞{% else %}点赞{% endif %}
+                                                        </a>({{ comment.likecount }})
+                                                    </span>
+                                                    <span style="display: inline-block;float: right;font-size: 13px;margin-left:20px">
+                                                        <a href="javascript:doComment2({{ comment.id }})">回复</a>
+                                                    </span>
+                                                    <span style="display: inline-block;float: right;font-size: 13px">
+                                                        评论时间：{{ comment.createtime }}</span>
+                                                </span>
+                                                <span style="display: block;word-wrap: break-word; word-break: normal;">
+                                                    {{ comment.content }}
+                                                </span>
+                                                {% if comment.parentid %}
+                                                    <div style="font-size: 90%;color:#30a9a3;margin-left:30px">
+                                                        <font style="font-weight:bolder;">被回复评论：</font>
+                                                        <a href="#">{{ comment.parentid.userid.username }}</a>
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                                        评论时间：{{ comment.parentid.createtime }}
+                                                        <br>
+                                                        {{ comment.parentid.content }}
+                                                     </div>
+                                                {% endif %}
+                                            </p>
+                                        </blockquote>
+                                        <hr>
+                                    {% endfor %}
+                                {% else %}
+                                    暂无数据
+                                {% endif %}
+								<form action="/item/detail?itemid={{ item.id }}" method="post" id="form">
+                                    {% csrf_token %}
+									<input type="hidden" name="page" value="{{ pageBean.page }}" id="page">
+								</form>
+                                {% include '../common/page.html' %}
+               				</div>
+            			</section>
+           			</div>
+                    <div class="col-md-3">
+              			<div class="panel panel-default sidebar-menu">
+			                <div class="panel-heading">
+			                  	<h3 class="h4 panel-title">发表评论</h3>
+			                </div>
+			                <div class="panel-body">
+			                  	<div class="form-group">
+			                        <textarea id="comment" class="form-control" maxlength="250"
+			                        	style="height:180px" placeholder="请输入评论内容..."></textarea>
+			                        <br>
+			                    	<button type="button" onclick="doComment()" class="btn btn-template-outlined">
+			                    		<i class="fa fa-envelope-o"></i> 提交信息
+			                    	</button>
+			                    </div>
+			                </div>
+              			</div>
+            		</div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+	{% include '../common/footer.html' %}
+	{% include '../common/js.html' %}
+    <script src="{% static 'js/jquery.raty.min.js' %}"></script>
+    <script>
+        //评分
+        $('#star').raty(
+                {
+                    score:parseFloat("{{ scorerecord.score }}"),
+                    halfShow:true,
+                    {% if scorerecord.score %}readOnly: false,{% endif %}
+                    path: '/static/images',
+                    hints: ['1分', '2分', '3分', '4分', '5分'],
+                    click: function(score, evt) {
+                        var data = "itemid={{ item.id }}"+"&score="+score+"&csrfmiddlewaretoken={{ csrf_token }}";
+						common_ajax_other("/scorerecord/doScorerecord",data);
+                    }
+                }
+            );
+
+        //添加或者取消收藏
+        function doCollect(itemid){
+             var data = "itemid={{ item.id }}"+"&csrfmiddlewaretoken={{ csrf_token }}";
+             common_ajax_other("/collection/doCollection",data);
+        }
+
+        //评论
+        function doComment(){
+            var comment = $("#comment").val();
+            if(comment==null || comment==""){
+                layer.msg("评论内容不能为空！");
+                return false;
+            }
+            var data = "itemid={{ item.id }}"+"&content="+comment+"&csrfmiddlewaretoken={{ csrf_token }}";
+            common_ajax_other("/comment/doComment",data);
+        }
+
+        //回复
+        function doComment2(parentid){
+            layer.prompt({title: '请输入回复内容', formType: 2, maxlength: 255}, function(text, index){
+                if(text==null || text==""){
+                    layer.msg("回复内容不能为空！");
+                }else{
+                    var data = "itemid={{ item.id }}"+"&content="+text+"&parentid="+parentid+"&csrfmiddlewaretoken={{ csrf_token }}";
+                    common_ajax_other("/comment/doComment",data);
+                }
+            });
+        }
+        //回复
+
+        //评论点赞
+        function doLike(commentid){
+            var data = "itemid={{ item.id }}"+"&commentid="+commentid+
+                "&csrfmiddlewaretoken={{ csrf_token }}";
+            common_ajax_other("/likerecord/save",data);
+        }
+        //评论点赞
+    </script>
+</body>
+</html>

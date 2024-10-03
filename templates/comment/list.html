@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>【我的评论】在线图书推荐系统</title>
+    {% include '../common/css.html' %}
+    {% include '../common/js.html' %}
+</head>
+<body>
+    {% include '../common/header.html' %}
+    <div id="all">
+        {% include '../common/banner.html' %}
+        <div id="content">
+            <div class="container">
+                <div class="row bar">
+                    <div class="col-md-12">
+                        <div class="heading">
+                            <h3 style="font-weight: normal">我的评论</h3>
+                        </div>
+                        <div class="">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="border-top-0">图书</th>
+                                            <th class="border-top-0">图书类型</th>
+                                            <th class="border-top-0">评论内容</th>
+                                            <th class="border-top-0">评论时间</th>
+                                            <th class="border-top-0">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if pageBean %}
+                                            {% for comment in pageBean %}
+                                                <tr>
+                                                    <td>
+                                                        <a href="/item/detail?itemid={{ comment.itemid.id }}">
+                                                            <img src="{{ comment.itemid.image.url }}"
+                                                                 title="{{ comment.itemid.itemname }}" style="height: 50px;" class="img-fluid">
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/item/detail?itemid={{ comment.itemid.id }}"
+                                                            title="{{ comment.itemid.itemname }}" >
+                                                            {{ comment.itemid.itemname }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ comment.itemid.typeid.typename }}</td>
+                                                    <td>
+                                                        {% if comment.content|length > 20 %}
+                                                            {{ comment.content|slice:'20' }}...
+                                                        {% else %} {{ comment.content }} {% endif %}
+                                                    </td>
+                                                    <td>{{ comment.createtime }}</td>
+                                                    <td>
+                                                        <a href="/comment/detail?commentid={{ comment.id }}" title="详情">
+                                                            详情
+                                                        </a>
+                                                        &nbsp;&nbsp;
+                                                        <a href="/comment/edit?commentid={{ comment.id }}" title="修改">
+                                                            修改
+                                                        </a>
+                                                        &nbsp;&nbsp;
+                                                        <a href="javascript:doDelete({{ comment.id }})" title="删除">
+                                                            删除
+                                                        </a>
+                                                    </td>
+                                                </tr>
+	                                        {% endfor %}
+                                        {% else %}
+							     			<tr><td colspan="6"><font style="color:black">暂无数据</font></td><tr>
+							     		{% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <form action="/comment/list" method="post" id="form">
+                            {% csrf_token %}
+                            <input type="hidden" name="page" value="{{ pageBean.page }}" id="page">
+    		  			</form>
+                        {% include '../common/page.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '../common/footer.html' %}
+  </body>
+</html>
+<script type="text/javascript">
+    //删除
+    function doDelete(id){
+        layer.confirm("确认删除？",{icon:7,title:"删除"},function(index){
+           layer.close(index);
+           var data = "commentid="+id+"&csrfmiddlewaretoken={{ csrf_token }}";
+           common_ajax_other("/comment/delete",data);
+        });
+    }
+</script>

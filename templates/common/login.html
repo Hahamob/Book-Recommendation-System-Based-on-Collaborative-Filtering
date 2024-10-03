@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>【用户登录】在线图书推荐系统</title>
+    {% include './css.html' %}
+</head>
+<body>
+    {% include './header.html' %}
+    <div id="all">
+        {% include './banner.html' %}
+        <div id="content">
+            <div class="container">
+                <div class="row bar">
+                    <div class="col-md-12" align="center">
+                        <div class="heading" align="left">
+                            <h3 style="font-weight: normal">用户登录</h3>
+                        </div>
+                        <div class="col-md-6" >
+                            <form action="/doLogin" method="post" id="form">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="email" style="display: inline-block;width:20%">用户名：</label>
+                                    <input name="username" id="username" maxlength="255" type="text"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="password" style="display: inline-block;width:20%">密码：</label>
+                                    <input name="password" id="password" maxlength="255" type="password"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-template-outlined" id="submitBtn">
+                                        <i class="fa fa-sign-in"></i>
+                                        &nbsp;&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;&nbsp;
+                                    </button>
+                                </div>
+                                <br><br><br>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	{% include './footer.html' %}
+	{% include './js.html' %}
+    <script>
+        jQuery(document).ready(function() {
+			$("#submitBtn").on("click",function(){
+				if($("#username").val()=="" || $("#password").val()==""){
+					layer.msg("数据不能为空!");
+				}else{
+                    common_ajax_other($("#form").attr("action"),$("#form").serialize());
+	         	}
+			});
+		});
+    </script>
+</body>
+</html>

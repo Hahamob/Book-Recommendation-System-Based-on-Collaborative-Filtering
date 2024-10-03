@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>【评论修改】在线图书推荐系统</title>
+    {% include '../common/css.html' %}
+    {% include '../common/js.html' %}
+</head>
+<body>
+    {% include '../common/header.html' %}
+    <div id="all">
+        {% include '../common/banner.html' %}
+        <div id="content">
+            <div class="container">
+                <div class="row bar">
+                    <div class="col-md-12" align="center">
+                        <div class="heading" align="left">
+                            <h3 style="font-weight: normal">评论修改</h3>
+                        </div>
+                        <div class="row portfolio-showcase">
+                        	<div class="col-md-3">
+                                <div class="image">
+                                </div>
+                            </div>
+	                        <div class="col-md-6">
+	                            <form action="/comment/doEdit" method="post" id="form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="commentid" value="{{ comment.id }}">
+	                                <div class="form-group">
+	                                    <label for="email" style="display: inline-block;width:20%">图书名称：</label>
+	                                    <input value="{{ comment.itemid.itemname }}" name="itemname" id="itemname" maxlength="255" type="text"
+	                                           readonly="readonly"
+	                                           class="form-control" style="display: inline-block;width:70%">
+	                                </div>
+	                                <div class="form-group">
+	                                    <label for="email" style="display: inline-block;width:20%">评论内容：</label>
+                                        <textarea name="content" id="contentT" maxlength="255"
+                                                  style="height:180px;display: inline-block;width:70%"
+                                                  class="form-control">{{ comment.content }}</textarea>
+	                                </div>
+	                                <br>
+	                                <div class="text-center">
+	                                    <button type="button" class="btn btn-template-outlined" id="submitBtn">
+	                                        &nbsp;&nbsp;提&nbsp;&nbsp;&nbsp;&nbsp;交&nbsp;&nbsp;
+	                                    </button>
+	                                </div>
+	                                <br><br>
+	                            </form>
+	                        </div>
+	                	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '../common/footer.html' %}
+  </body>
+</html>
+<script type="text/javascript">
+    $(function(){
+        $("#submitBtn").on("click",function(){
+            var temp = true;
+            $("#form").find("input[type='text']").each(function(){
+                if($(this).val()==null || $(this).val()==""){
+                    temp = false;
+                    return false;
+                }
+            });
+            if(!temp){
+                layer.msg("数据不能为空!");return false;
+            }
+            if($("#contentT").val()==null || $("#contentT").val()==""){
+                layer.msg("数据不能为空!");return false;
+            }
+            common_ajax_other($("#form").attr("action"),$("#form").serialize());
+        });
+    });
+</script>

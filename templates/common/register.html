@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>【用户注册】在线图书推荐系统</title>
+    {% include './css.html' %}
+</head>
+<body>
+    {% include './header.html' %}
+    <div id="all">
+        {% include './banner.html' %}
+        <div id="content">
+            <div class="container">
+                <div class="row bar">
+                    <div class="col-md-12" align="center">
+                        <div class="heading" align="left">
+                            <h3 style="font-weight: normal">用户注册</h3>
+                        </div>
+                        <div class="col-md-6" >
+                            <form action="/doRegister" method="post" id="form">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="email" style="display: inline-block;width:20%">用户名：</label>
+                                    <input name="username" id="username" maxlength="255" type="text"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password" style="display: inline-block;width:20%">密码：</label>
+                                    <input name="password" id="password" maxlength="255" type="password"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password" style="display: inline-block;width:20%">确认密码：</label>
+                                    <input name="passwordConf" id="passwordConf" maxlength="255" type="password"
+                                           class="form-control" style="display: inline-block;width:70%">
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-template-outlined" id="submitBtn">
+                                        <i class="fa fa-user-md"></i>
+                                        &nbsp;&nbsp;注&nbsp;&nbsp;&nbsp;&nbsp;册&nbsp;&nbsp;
+                                    </button>
+                                </div>
+                                <br><br>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	{% include './footer.html' %}
+	{% include './js.html' %}
+    <script type="text/javascript">
+		jQuery(document).ready(function() {
+			$("#submitBtn").on("click",function(){
+				var temp = true;
+				$("#form input").each(function(){
+					if($(this).val()==null || $(this).val()==""){
+						temp = false;
+						return false;
+					}
+				});
+				if(!temp){
+					layer.msg("数据不能为空!");
+				}else{
+					if($("#password").val()!=$("#passwordConf").val()){
+						layer.msg("两次密码不一致!");return;
+					}
+		            common_ajax_other($("#form").attr("action"),$("#form").serialize());
+				}
+			});
+		});
+    </script>
+</body>
+</html>
